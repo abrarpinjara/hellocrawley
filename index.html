@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>Hello Crawley</title>
-<meta name="description" content="A little 3D Crawley you can walk around. Find people by what they do, wave hello and arrange to meet.">
-<meta property="og:title" content="Hello Crawley">
-<meta property="og:description" content="Walk the town, meet Crawley people.">
+<title>Hello Town</title>
+<meta name="description" content="A little 3D town you can walk around. Find people by what they do, wave hello and arrange to meet.">
+<meta property="og:title" content="Hello Town">
+<meta property="og:description" content="Walk the town, meet the locals.">
 <meta name="theme-color" content="#c8102e">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23c8102e'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='Georgia'>C</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23c8102e'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='Georgia'>T</text></svg>">
 <link rel="stylesheet" href="src/style.css">
 </head>
 <body>
@@ -16,7 +16,7 @@
 <div id="labels"></div>
 
 <header id="hud-top">
-  <div class="brand">Hello <span>Crawley</span></div>
+  <div class="brand"><div class="b1">Hello <span>Town</span></div><div class="b2" id="town-name">Crawley</div></div>
   <div id="area" class="pill">Queens Square</div>
   <div id="met" class="pill" title="People you've met">👋 0 met</div>
 </header>
@@ -51,8 +51,9 @@
 <div id="start">
   <form id="start-form">
     <p class="eyebrow">Early demo</p>
-    <h1>Hello <span>Crawley</span></h1>
-    <p class="lede">A little 3D Crawley you can walk around. Find people by what they do, wave hello and arrange to meet up somewhere in town.</p>
+    <h1>Hello <span>Town</span></h1>
+    <p class="town-sub">Starting in Crawley, West Sussex</p>
+    <p class="lede">A little 3D town you can walk around. Find people by what they do, wave hello and arrange to meet up somewhere in town.</p>
     <label>Your first name
       <input id="p-name" maxlength="20" required autocomplete="given-name" placeholder="e.g. Sam">
     </label>

@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import {
-  LANDMARKS, NEIGHBOURHOODS, ROADS, OCCUPATIONS, NPC_NAMES,
+  TOWNS, townAt, LANDMARKS, NEIGHBOURHOODS, ROADS, OCCUPATIONS, NPC_NAMES,
   GREETINGS, MEET_LINES, DECLINE_LINES
 } from "./data.js";
 
@@ -10,7 +10,11 @@ const rand = (a, b) => a + Math.random() * (b - a);
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const COLORS = ["#c8102e", "#2563eb", "#0f766e", "#d97706", "#7c3aed", "#db2777", "#4d7c0f", "#0891b2", "#334155"];
-const BOUNDS = { minX: -200, maxX: 200, minZ: -240, maxZ: 175 };
+// The walkable world is the union of every town's area.
+const BOUNDS = {
+  minX: Math.min(...TOWNS.map((t) => t.bounds.minX)), maxX: Math.max(...TOWNS.map((t) => t.bounds.maxX)),
+  minZ: Math.min(...TOWNS.map((t) => t.bounds.minZ)), maxZ: Math.max(...TOWNS.map((t) => t.bounds.maxZ))
+};
 
 function store(key, val) {
   try {
@@ -126,8 +130,9 @@ for (const n of NEIGHBOURHOODS) {
     placed++;
   }
 }
-for (let i = 0; i < 700; i++) {
-  const x = rand(BOUNDS.minX, BOUNDS.maxX), z = rand(BOUNDS.minZ + 60, BOUNDS.maxZ);
+for (let i = 0; i < 700 * TOWNS.length; i++) {
+  const tb = pick(TOWNS).bounds;
+  const x = rand(tb.minX, tb.maxX), z = rand(tb.minZ + 60, tb.maxZ);
   if (nearRoad(x, z, 5) || houseSpots.some((h) => Math.hypot(h.x - x, h.z - z) < 5)) continue;
   const inPark = LANDMARKS.find((l) => ["park", "lake", "pond", "gardens"].includes(l.type) && Math.hypot(x - l.x, z - l.z) < l.r + 12);
   if (!inPark && nearLandmark(x, z, 3)) continue;
@@ -350,7 +355,7 @@ function landmarkSpot(l, spread = 0.6) {
 
 // Player
 const profile = store("hc-profile") || { name: "", job: "", color: COLORS[0] };
-const player = { name: "You", job: "", x: 0, z: 22, heading: Math.PI, speed: 0, phase: 0, waveT: 0, mesh: null, tag: null };
+const player = { name: "You", job: "", x: TOWNS[0].spawn.x, z: TOWNS[0].spawn.z, heading: Math.PI, speed: 0, phase: 0, waveT: 0, mesh: null, tag: null };
 
 // NPCs: fictional demo characters
 const npcs = NPC_NAMES.map((name, i) => {
@@ -511,7 +516,8 @@ function renderPanel() {
     renderPeopleList();
   } else if (openPanelName === "places") {
     $("#panel-title").textContent = "Places";
-    body.innerHTML = LANDMARKS.slice().sort((a, b) => distTo(a) - distTo(b)).map((l) => `
+    const here = townAt(player.x, player.z);
+    body.innerHTML = LANDMARKS.filter((l) => !here || l.town === here.id).sort((a, b) => distTo(a) - distTo(b)).map((l) => `
       <div class="row place">
         <div class="info"><b>${esc(l.name)}</b><small>${metres(distTo(l))} away</small><p>${esc(l.blurb)}</p></div>
         <div class="btns"><button class="sm red" data-go="${l.id}">Go</button></div>
@@ -779,6 +785,21 @@ function placeTag(el, x, z, h, maxD) {
   return p;
 }
 
+// "Hello Town" + the name of the town the player is in
+let currentTown;
+function updateTown() {
+  const t = townAt(player.x, player.z);
+  const id = t ? t.id : null;
+  if (id === currentTown) return;
+  const first = currentTown === undefined;
+  currentTown = id;
+  const el = $("#town-name");
+  el.textContent = t ? t.name : "On the road";
+  el.classList.remove("swap"); void el.offsetWidth; el.classList.add("swap");
+  document.title = t ? `Hello Town · ${t.name}` : "Hello Town";
+  if (!first && t && started) toast(`Welcome to ${t.name}${t.county ? ", " + t.county : ""}!`, true);
+}
+
 let started = false, last = performance.now(), panelTick = 0;
 function frame(now) {
   const dt = Math.min(0.05, (now - last) / 1000);
@@ -830,12 +851,14 @@ function frame(now) {
   if ((panelTick += dt) > 0.5) {
     panelTick = 0;
     $("#area").textContent = "📍 " + placeName(player.x, player.z);
+    updateTown();
     if (openPanelName === "people") renderPeopleList();
   }
 
   drawMinimap();
   renderer.render(scene, camera);
-  requestAnimationFrame(frame);
+  updateTown();
+requestAnimationFrame(frame);
 }
 
 addEventListener("resize", () => {
@@ -868,10 +891,12 @@ $("#start-form").addEventListener("submit", (e) => {
   $("#start").hidden = true;
   started = true;
   updateMetCount();
-  toast(`Welcome to Crawley, ${profile.name}! Try waving at someone nearby.`, true);
+  updateTown();
+  toast(`Welcome to ${townAt(player.x, player.z)?.name || "town"}, ${profile.name}! Try waving at someone nearby.`, true);
 });
 
 // Expose a tiny hook for automated checks.
-window.__hc = { player, npcs, meetups, askToMeet, LANDMARKS };
+window.__hc = { player, npcs, meetups, askToMeet, LANDMARKS, TOWNS, updateTown };
 
+updateTown();
 requestAnimationFrame(frame);

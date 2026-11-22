@@ -1,7 +1,15 @@
-// World data for Hello Crawley.
-// Coordinates are a stylised map, not to scale: -z is north (towards Gatwick).
+// World data for Hello Town.
+//
+// The world is a set of towns, each with its own area on the map. The HUD
+// shows "Hello Town" with the name of whichever town the player is standing in.
+// To add a town (e.g. Brighton), give it bounds that don't overlap existing
+// towns, then add its landmarks, neighbourhoods and roads in the same
+// coordinate space and append it to TOWNS below.
+//
+// Coordinates are a stylised map, not to scale: -z is north.
 
-export const LANDMARKS = [
+// ---------------------------------------------------------------- Crawley
+const CRAWLEY_LANDMARKS = [
   { id: "queens", name: "Queens Square", type: "square", x: 0, z: 0, r: 14,
     blurb: "The heart of the town centre: bandstand, fountains and the Saturday crowd." },
   { id: "memorial", name: "Memorial Gardens", type: "gardens", x: 32, z: -18, r: 13,
@@ -30,7 +38,7 @@ export const LANDMARKS = [
     blurb: "A quiet old mill pond, popular with dog walkers and herons." }
 ];
 
-export const NEIGHBOURHOODS = [
+const CRAWLEY_NEIGHBOURHOODS = [
   { name: "Northgate", x: 22, z: -62 },
   { name: "West Green", x: -50, z: -18 },
   { name: "Three Bridges", x: 110, z: -15 },
@@ -49,7 +57,7 @@ export const NEIGHBOURHOODS = [
 ];
 
 // Road polylines.
-export const ROADS = [
+const CRAWLEY_ROADS = [
   [[0, -150], [0, -50], [0, 0], [0, 40], [12, 76], [-6, 112]],          // north-south spine
   [[-125, -38], [-48, -6], [0, 0], [28, 0], [94, -24], [150, -28]],     // east-west through town
   [[-82, 40], [-40, 42], [0, 42], [56, 50], [100, 56], [150, 40]],      // southern ring
@@ -60,6 +68,29 @@ export const ROADS = [
   [[-165, 40], [-115, 82]]                                               // Kilnwood Vale
 ];
 
+// ---------------------------------------------------------------- towns
+export const TOWNS = [
+  {
+    id: "crawley", name: "Crawley", county: "West Sussex",
+    bounds: { minX: -200, maxX: 200, minZ: -240, maxZ: 175 },
+    spawn: { x: 0, z: 22 },
+    landmarks: CRAWLEY_LANDMARKS,
+    neighbourhoods: CRAWLEY_NEIGHBOURHOODS,
+    roads: CRAWLEY_ROADS
+  }
+  // { id: "brighton", name: "Brighton", county: "East Sussex", bounds: {...}, ... }
+];
+
+// Flattened views across every town, each item tagged with its town id.
+export const LANDMARKS = TOWNS.flatMap((t) => t.landmarks.map((l) => ({ ...l, town: t.id })));
+export const NEIGHBOURHOODS = TOWNS.flatMap((t) => t.neighbourhoods.map((n) => ({ ...n, town: t.id })));
+export const ROADS = TOWNS.flatMap((t) => t.roads);
+
+export function townAt(x, z) {
+  return TOWNS.find((t) => x >= t.bounds.minX && x <= t.bounds.maxX && z >= t.bounds.minZ && z <= t.bounds.maxZ) || null;
+}
+
+// ---------------------------------------------------------------- people
 export const OCCUPATIONS = [
   "Baggage handler", "Cabin crew", "Pilot", "Nurse", "Teacher", "Barista",
   "Bus driver", "Software developer", "Student", "Retired", "Shop owner",
