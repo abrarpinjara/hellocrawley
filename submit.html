@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Share a story · Hello Crawley</title>
+<meta name="description" content="Share your story or nominate someone from Crawley.">
+<meta property="og:title" content="Share a story · Hello Crawley">
+<meta property="og:description" content="Share your story or nominate someone from Crawley.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23c8102e'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='Georgia'>C</text></svg>">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <a class="logo" href="index.html">Hello <span>Crawley</span></a>
+    <button class="menu-toggle" aria-expanded="false" aria-label="Menu">☰</button>
+    <nav class="nav">
+      <a href="index.html#stories">Stories</a>
+      <a href="index.html#neighbourhoods">Neighbourhoods</a>
+      <a href="about.html">About</a>
+      <a class="btn" href="submit.html" aria-current="page">Share a story</a>
+    </nav>
+  </div>
+</header>
+<main>
+
+<div class="wrap">
+  <article class="prose">
+    <p class="eyebrow">Share a story</p>
+    <h1>Tell us about someone.</h1>
+    <p class="lede">Maybe it's you. Maybe it's the person who runs your corner shop. We'll get in touch to arrange a chat and a portrait.</p>
+
+    <form class="submit" id="submit-form" name="story" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+      <input type="hidden" name="form-name" value="story">
+      <p hidden><label>Leave this empty <input name="bot-field"></label></p>
+
+      <div class="field">
+        <label for="s-type">This story is about</label>
+        <select id="s-type" name="type" required>
+          <option value="me">Me</option>
+          <option value="someone">Someone I know</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="s-name">Your name</label>
+          <input id="s-name" name="name" required autocomplete="name">
+        </div>
+        <div class="field">
+          <label for="s-email">Email or phone</label>
+          <input id="s-email" name="contact" required autocomplete="email">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="s-hood">Neighbourhood</label>
+        <select id="s-hood" name="neighbourhood" required><option value="">Choose one</option></select>
+      </div>
+
+      <div class="field">
+        <label for="s-story">The story</label>
+        <span class="hint">A few lines is plenty. What makes this person, or this moment, worth hearing about?</span>
+        <textarea id="s-story" name="story" required></textarea>
+      </div>
+
+      <label class="check"><input type="checkbox" name="consent" required> I agree to be contacted about this story. If it's about someone else, I'll check they're happy to be approached.</label>
+
+      <div><button class="btn" type="submit">Send</button></div>
+    </form>
+
+    <div class="form-success" id="form-success">
+      <h2>Thank you!</h2>
+      <p>We've got your story. Someone from Hello Crawley will be in touch soon.</p>
+      <p><a class="btn ghost" href="index.html">Back to stories</a></p>
+    </div>
+    <div class="form-success" id="form-error">
+      <h2>That didn't send</h2>
+      <p>Something went wrong. Please try again, or email us at <a href="mailto:hello@example.com">hello@example.com</a>.</p>
+    </div>
+  </article>
+</div>
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <a href="index.html">Stories</a>
+      <a href="about.html">About</a>
+      <a href="submit.html">Share a story</a>
+      <a href="about.html#privacy">Privacy &amp; consent</a>
+    </div>
+    <div>© <span id="year"></span> Hello Crawley · Stories from the people of Crawley, West Sussex</div>
+  </div>
+</footer>
+<script src="assets/stories.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
