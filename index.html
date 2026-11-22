@@ -2,90 +2,72 @@
 <html lang="en-GB">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Hello Crawley · Stories from the people of Crawley</title>
-<meta name="description" content="Everyday stories from the people of Crawley, West Sussex, told in their own words.">
-<meta property="og:title" content="Hello Crawley · Stories from the people of Crawley">
-<meta property="og:description" content="Everyday stories from the people of Crawley, West Sussex, told in their own words.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/style.css">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Hello Crawley</title>
+<meta name="description" content="A little 3D Crawley you can walk around. Find people by what they do, wave hello and arrange to meet.">
+<meta property="og:title" content="Hello Crawley">
+<meta property="og:description" content="Walk the town, meet Crawley people.">
+<meta name="theme-color" content="#c8102e">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23c8102e'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='Georgia'>C</text></svg>">
+<link rel="stylesheet" href="src/style.css">
 </head>
 <body>
-<header class="site-header">
-  <div class="wrap">
-    <a class="logo" href="index.html">Hello <span>Crawley</span></a>
-    <button class="menu-toggle" aria-expanded="false" aria-label="Menu">☰</button>
-    <nav class="nav">
-      <a href="index.html#stories" aria-current="page">Stories</a>
-      <a href="index.html#neighbourhoods">Neighbourhoods</a>
-      <a href="about.html">About</a>
-      <a class="btn" href="submit.html">Share a story</a>
-    </nav>
-  </div>
+<div id="app"></div>
+<div id="labels"></div>
+
+<header id="hud-top">
+  <div class="brand">Hello <span>Crawley</span></div>
+  <div id="area" class="pill">Queens Square</div>
+  <div id="met" class="pill" title="People you've met">👋 0 met</div>
 </header>
-<main>
 
-<section class="hero">
-  <div class="wrap">
-    <p class="eyebrow">Crawley, West Sussex</p>
-    <h1>Every face in town has a story.</h1>
-    <p class="lede">Hello Crawley shares portraits and first-person stories from the people who make this town: neighbours, shopkeepers, airport crews, newcomers and families who've been here since the New Town was built.</p>
-    <div class="actions">
-      <a class="btn" href="#stories">Read the stories</a>
-      <a class="btn ghost" href="submit.html">Nominate someone</a>
-    </div>
-  </div>
-</section>
-
-<div class="wrap">
-  <a class="featured" id="featured" href="#"></a>
+<div id="compass" hidden>
+  <div id="compass-arrow">➤</div>
+  <div id="compass-text"></div>
+  <button id="compass-clear" aria-label="Clear destination">✕</button>
 </div>
 
-<section id="stories">
-  <div class="wrap">
-    <div class="section-head"><h2>Stories</h2></div>
-    <div class="chips" id="chips" role="group" aria-label="Filter by theme"></div>
-    <div class="filters">
-      <input id="f-search" type="search" placeholder="Search stories" aria-label="Search stories">
-      <select id="f-hood" aria-label="Filter by neighbourhood"><option value="">All neighbourhoods</option></select>
-    </div>
-    <div class="grid" id="grid"></div>
-  </div>
-</section>
+<nav id="actions">
+  <button data-panel="people"><span>🔎</span>People</button>
+  <button data-panel="places"><span>📍</span>Places</button>
+  <button data-panel="meetups"><span>☕</span>Meetups</button>
+  <button id="btn-wave"><span>👋</span>Wave</button>
+</nav>
 
-<section class="hoods" id="neighbourhoods">
-  <div class="wrap">
-    <h2>Fifteen neighbourhoods, one town</h2>
-    <p>Crawley was planned around neighbourhoods, each with its own parade of shops, school and green. Find stories from yours.</p>
-    <div class="hood-list" id="hood-list"></div>
+<aside id="panel" hidden>
+  <div class="panel-head">
+    <h2 id="panel-title"></h2>
+    <button id="panel-close" aria-label="Close">✕</button>
   </div>
-</section>
+  <div id="panel-body"></div>
+</aside>
 
-<div class="wrap">
-  <section class="cta">
-    <div>
-      <h2>Know someone we should meet?</h2>
-      <p>Your neighbour, your nan, the lollipop man. Tell us about them, or tell us your own story.</p>
-    </div>
-    <a class="btn" href="submit.html">Share a story</a>
-  </section>
+<div id="card" hidden></div>
+<div id="toasts"></div>
+<canvas id="minimap" width="180" height="180"></canvas>
+<div id="joystick"><div id="knob"></div></div>
+<div id="hint">WASD / arrows to walk · Shift to run · drag to look · F to wave · click someone to say hi</div>
+
+<div id="start">
+  <form id="start-form">
+    <p class="eyebrow">Early demo</p>
+    <h1>Hello <span>Crawley</span></h1>
+    <p class="lede">A little 3D Crawley you can walk around. Find people by what they do, wave hello and arrange to meet up somewhere in town.</p>
+    <label>Your first name
+      <input id="p-name" maxlength="20" required autocomplete="given-name" placeholder="e.g. Sam">
+    </label>
+    <label>What do you do?
+      <input id="p-job" maxlength="30" list="jobs" required placeholder="e.g. Nurse">
+      <datalist id="jobs"></datalist>
+    </label>
+    <label>Pick a colour</label>
+    <div id="swatches"></div>
+    <button type="submit" class="primary">Start walking</button>
+    <p class="small">Everyone you meet in this demo is a made-up character. Real players are coming soon.</p>
+  </form>
 </div>
-</main>
-<footer class="site-footer">
-  <div class="wrap">
-    <div>
-      <a href="index.html">Stories</a>
-      <a href="about.html">About</a>
-      <a href="submit.html">Share a story</a>
-      <a href="about.html#privacy">Privacy &amp; consent</a>
-    </div>
-    <div>© <span id="year"></span> Hello Crawley · Stories from the people of Crawley, West Sussex</div>
-  </div>
-</footer>
-<script src="assets/stories.js"></script>
-<script src="assets/app.js"></script>
+
+<script type="importmap">{ "imports": { "three": "./vendor/three.module.js" } }</script>
+<script type="module" src="src/main.js"></script>
 </body>
 </html>
