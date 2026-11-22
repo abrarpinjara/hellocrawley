@@ -354,7 +354,7 @@ function landmarkSpot(l, spread = 0.6) {
 }
 
 // Player
-const profile = store("hc-profile") || { name: "", job: "", color: COLORS[0] };
+const profile = store("ht-profile") || { name: "", job: "", color: COLORS[0] };
 const player = { name: "You", job: "", x: TOWNS[0].spawn.x, z: TOWNS[0].spawn.z, heading: Math.PI, speed: 0, phase: 0, waveT: 0, mesh: null, tag: null };
 
 // NPCs: fictional demo characters
@@ -472,7 +472,7 @@ const metres = (d) => (d < 1000 ? Math.round(d * 4) + " m" : (d * 4 / 1000).toFi
 
 // Meetups
 const meetups = [];
-const metIds = new Set(store("hc-met") || []);
+const metIds = new Set(store("ht-met") || []);
 function updateMetCount() { $("#met").textContent = `👋 ${metIds.size} met`; }
 
 // Panels
@@ -650,7 +650,7 @@ function checkMeetups() {
       n.waveT = 1.6;
       say(n, pick(MEET_LINES), 5);
       metIds.add(n.id);
-      store("hc-met", [...metIds]);
+      store("ht-met", [...metIds]);
       updateMetCount();
       toast(`You met ${n.name} (${n.job}) at ${m.place.name}! 🎉`, true);
       if (destination && destination.label.startsWith("Meet " + n.name)) clearDestination();
@@ -884,7 +884,7 @@ $("#start-form").addEventListener("submit", (e) => {
   e.preventDefault();
   profile.name = $("#p-name").value.trim();
   profile.job = $("#p-job").value.trim();
-  store("hc-profile", profile);
+  store("ht-profile", profile);
   player.name = profile.name; player.job = profile.job;
   player.mesh = makePerson(profile.color);
   player.tag = makeTag(profile.name + " (you)", profile.job, true);
@@ -896,7 +896,7 @@ $("#start-form").addEventListener("submit", (e) => {
 });
 
 // Expose a tiny hook for automated checks.
-window.__hc = { player, npcs, meetups, askToMeet, LANDMARKS, TOWNS, updateTown };
+window.__ht = { player, npcs, meetups, askToMeet, LANDMARKS, TOWNS, updateTown };
 
 updateTown();
 requestAnimationFrame(frame);
